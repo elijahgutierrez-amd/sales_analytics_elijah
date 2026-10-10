@@ -4,11 +4,9 @@ import plotly.express as px
 from google import genai
 from google.genai import errors
 
-# 1. Page Configuration
 st.set_page_config(page_title="11.11 Analytics Dashboard", layout="wide")
 st.title("🛍️ 11.11 Sale Performance Dashboard")
 
-# 2. Load Summary Data
 @st.cache_data
 def load_data():
     rev_cat = pd.read_csv("results/1_revenue_by_category.csv")
@@ -24,7 +22,7 @@ except Exception as e:
     st.error(f"Error loading summary files from results/: {e}")
     st.stop()
 
-# Extract Key Metrics
+# Key Metrics
 total_revenue = aov_df['total_delivered_revenue'].iloc[0]
 total_orders = metrics_reg['total_orders'].sum()
 avg_cancellation = (canc_pm['cancelled_orders'].sum() / total_orders) * 100
@@ -34,7 +32,6 @@ top_category_rev = rev_cat.iloc[0]['total_revenue']
 highest_canc_pm = canc_pm.iloc[0]['payment_method']
 highest_canc_rate = canc_pm.iloc[0]['cancellation_rate_pct']
 
-# Top Metrics Row
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Delivered Revenue", f"₱{total_revenue:,.2f}")
 c2.metric("Total Orders", f"{total_orders:,.0f}")
@@ -43,22 +40,17 @@ c4.metric("AOV", f"₱{aov_val:,.2f}")
 
 st.divider()
 
-# ---------------------------------------------------------
-# TASK F: GENERATIVE AI BRIEFING SECTION
-# ---------------------------------------------------------
+# TASK F: GENERATIVE AI BRIEFING
 st.subheader("🤖 AI Executive Briefing")
 
 if st.button("Generate Briefing", type="primary"):
-    # Check if API key exists in secrets
     if "GEMINI_API_KEY" not in st.secrets:
         st.error("⚠️ GEMINI_API_KEY is not configured in Streamlit secrets.")
     else:
         with st.spinner("Analyzing performance metrics with Gemini..."):
             try:
-                # Initialize Gemini client using key from Streamlit secrets
                 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
-                # Strictly grounded prompt using only passed numbers
                 prompt = f"""
 You are an executive e-commerce analyst briefing a store owner on their 11.11 sale performance.
 You MUST rely strictly on the provided dataset summary numbers below and make NO assumptions or extrapolations beyond this data.
@@ -95,7 +87,7 @@ Write a concise briefing that is EXACTLY 5 sentences long:
 
 st.divider()
 
-# Dashboard Visualizations
+# Charts
 st.subheader("📊 Sales Analytics")
 selected_region = st.selectbox("Select Region Filter:", ["All Regions"] + list(metrics_reg['region'].unique()))
 filtered_reg = metrics_reg if selected_region == "All Regions" else metrics_reg[metrics_reg['region'] == selected_region]
