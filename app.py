@@ -72,8 +72,9 @@ Write a concise briefing that is EXACTLY 5 sentences long:
 5. Provide exactly ONE strategic recommendation for next year's sale based strictly on these numbers.
 """
 
+                # Set model parameter to gemini-3.8-flash
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-3.8-flash",
                     contents=prompt
                 )
 
@@ -87,7 +88,7 @@ Write a concise briefing that is EXACTLY 5 sentences long:
 
 st.divider()
 
-# Charts
+# Visualizations Section
 st.subheader("📊 Sales Analytics")
 selected_region = st.selectbox("Select Region Filter:", ["All Regions"] + list(metrics_reg['region'].unique()))
 filtered_reg = metrics_reg if selected_region == "All Regions" else metrics_reg[metrics_reg['region'] == selected_region]
